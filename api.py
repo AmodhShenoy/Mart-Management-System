@@ -1,17 +1,33 @@
-from flask import Flask
-import MySQLdb
+from flask import Flask, render_template, request
+from flask_mysqldb import MySQL
 
+db = MySQL()
 app = Flask(__name__)
 
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'iwannaknow101'
+app.config['MYSQL_DB'] = 'dbms'
+app.config['MYSQL_HOST'] = 'localhost'
+
+
 #login
-@app.route('/')
-def trial():
-	db = MySQLdb.connect("localhost","root",'iwannaknow101','trial')
-	cursor = db.cursor()
-	cursor.execute('INSERT INTO ITEMS VALUES (22,"mastitem",99);')
-	db.commit()
-	db.close()
-	return "SUCCESS"
+@app.route('/',methods=['GET','POST'])
+def login():
+	if request.method=='GET':
+		return render_template('templates/login.html')
+	else:
+		username = request.form.get('uname')
+		pwd = reqeust.form.get('pwd')
+
+	cur = db.connection.cursor()
+
+
+	# db = MySQLdb.connect("localhost","root",'iwannaknow101','trial')
+	# cursor = db.cursor()
+	# cursor.execute('INSERT INTO ITEMS VALUES (22,"mastitem",99);')
+	# db.commit()
+	# db.close()
+	# return "SUCCESS"
 
 # #creating a new item
 # @app.route('/items/new')
