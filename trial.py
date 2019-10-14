@@ -1,14 +1,13 @@
 from flask import Flask, render_template, request
 from flask_mysqldb import MySQL
 
-db = MySQL()
 app = Flask(__name__)
+db = MySQL(app)
 
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'iwannaknow101'
+app.config['MYSQL_USER'] = 'dbms'
+app.config['MYSQL_PASSWORD'] = 'dbmsproject'
 app.config['MYSQL_DB'] = 'dbms'
-app.config['MYSQL_HOST'] = '127.0.0.1'
-app.config['MYSQL_PORT'] = 5000
+app.config['MYSQL_HOST'] = 'localhost'
 
 
 #login

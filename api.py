@@ -3,12 +3,12 @@ from flask_mysqldb import MySQL
 
 db = MySQL()
 app = Flask(__name__)
+db = MySQL(app)
 
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'iwannaknow101'
+app.config['MYSQL_USER'] = 'dbms'
+app.config['MYSQL_PASSWORD'] = 'dbmsproject'
 app.config['MYSQL_DB'] = 'dbms'
 app.config['MYSQL_HOST'] = 'localhost'
-
 
 #login
 @app.route('/',methods=['GET','POST'])
@@ -18,7 +18,12 @@ def login():
 	else:
 		username = request.form.get('uname')
 		pwd = reqeust.form.get('pwd')
-
+		cur = db.connection.cursor()
+		cur.execute("SELECT EmpID from EMPLOYEE WHERE Username='%s' AND EmpPassword='%s';".format(username,pwd))
+		db.commit()
+		l = cur.fetchall()
+		if len(l)==1:
+			return l[0]
 	cur = db.connection.cursor()
 
 
