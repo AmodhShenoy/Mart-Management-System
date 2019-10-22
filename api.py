@@ -23,8 +23,9 @@ def login():
 		db.commit()
 		l = cur.fetchall()
 		if len(l)==1:
+			cur.close()
 			return l[0]
-	cur = db.connection.cursor()
+		return False
 
 
 	# db = MySQLdb.connect("localhost","root",'iwannaknow101','trial')
