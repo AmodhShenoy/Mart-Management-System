@@ -1,0 +1,140 @@
+*{
+	font-family: Candara;
+}
+
+
+body{
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	background: transparent url("bg.jpg") no-repeat border-box;
+	background-size: cover;
+}
+
+.container{
+	width: 400px;
+	background-color: white;
+	padding: 50px;
+	border-radius: 10px;
+	border-color: black;
+	border-style: solid;
+	border-width: 1px;
+	padding: 0;
+	margin: 0;
+}
+
+.pp{
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.form{
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: left;
+}
+
+/* Cancel */ 
+
+.cancel{
+	border-top: solid 1px black;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+	padding: 10px;
+	background-color: #C0C0C0;
+
+}
+
+/* Buttons */
+button{
+	border-radius: 10px;
+	border: none; 
+	padding: 10px 25px;
+	font-weight: bold;
+}
+
+button:hover{
+	opacity: 0.8;
+	cursor: pointer;
+	box-shadow: 1px 1px 1px blur;
+}
+
+button[name=cancel]{
+	background-color: white;
+	color: #993366;
+	font-size: 15px;
+}
+
+button[name=cancel]:hover{
+	 color: black;
+}
+
+button[type=submit]{
+	width: 100%;
+	background-color: #993366;
+	color: white;
+	text-shadow: 2px 2px 0 black;
+	font-size: 18px;
+}
+
+/* Links */
+a{
+	text-decoration: none;
+	color: #993366;
+	font-weight: bold;
+}
+
+a:hover{
+	opacity: 0.8;
+}
+
+a:active{
+	color: darkred;
+}
+
+.frgt{
+	float: right;
+}
+
+/* Form */
+.form{
+	padding: 10px 20px;
+	width: auto;
+}
+.Ftxt{
+	text-align: left;
+}
+
+.box{
+	border-radius: 5px;
+	width: 100%;
+	height: 40px;
+	box-sizing: border-box;
+	font-size: 17px;
+}
+
+.box:focus{
+	border: solid 2px #993366;
+}
+
+.fields{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+span{
+	padding: 10px;
+}
+
+.rmbr{
+	text-align: center;
+	font-size: 12px;
+	color: #993366;
+	font-family: Verdana;
+}
+
