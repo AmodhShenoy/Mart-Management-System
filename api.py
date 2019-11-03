@@ -1,12 +1,13 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
+import MySQLdb.cursors
+import re
 
-db = MySQL()
 app = Flask(__name__)
 db = MySQL(app)
-
+app.secret_key = 'dbms'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'password'
+app.config['MYSQL_PASSWORD'] = 'Vithik13&'
 app.config['MYSQL_DB'] = 'dbms'
 app.config['MYSQL_HOST'] = 'localhost'
 
@@ -16,16 +17,26 @@ def login():
 	if request.method=='GET':
 		return render_template('land.html')
 	else:
-		username = request.form.get('uname')
-		pwd = reqeust.form.get('pwd')
-		cur = db.connection.cursor()
-		cur.execute("SELECT EmpID from EMPLOYEE WHERE Username='%s' AND EmpPassword='%s';".format(username,pwd))
-		db.commit()
-		l = cur.fetchall()
-		if len(l)==1:
-			cur.close()
-			return l[0]
-		return False
+		cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
+		username = request.form.get("username")
+		cur.execute('SELECT * FROM EMPLOYEE WHERE Username = %s',(str(username),))
+		l = cur.fetchone()
+		if not l:
+			return render_template('land.html', msg = 'Invalid Username')
+
+		pwd = request.form.get("pwd")
+		cur.execute('SELECT EmpID,EmpPassword FROM EMPLOYEE WHERE Username = %s',(str(username),))
+
+		row = cur.fetchone()
+		if row and pwd == row['EmpPassword']:
+			session['loggedin'] = True
+			session['id'] = row['EmpID']
+			session['username'] = str(username)
+			print("hey")
+			print(session)
+			return render_template('land.html', msg = 'Hello')
+		else:
+			return render_template('land.html', msg = 'Invalid Password')
 
 
 	# db = MySQLdb.connect("localhost","root",'iwannaknow101','trial')
