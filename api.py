@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from flask_mysqldb import MySQL
+from flask_session import Session
 
 db = MySQL()
 app = Flask(__name__)
@@ -16,16 +17,27 @@ def login():
 	if request.method=='GET':
 		return render_template('land.html')
 	else:
-		username = request.form.get('uname')
-		pwd = reqeust.form.get('pwd')
+		username = request.form.get('username')
+		pwd = request.form.get('pwd')
 		cur = db.connection.cursor()
-		cur.execute("SELECT EmpID from EMPLOYEE WHERE Username='%s' AND EmpPassword='%s';".format(username,pwd))
-		db.commit()
-		l = cur.fetchall()
-		if len(l)==1:
-			cur.close()
-			return l[0]
-		return False
+		cur.execute("SELECT * from EMPLOYEE;")
+		db.connection.commit()
+		emps = cur.fetchall()
+		for emp in emps:
+			if emp[2]==pwd and emp[4]==username:
+				session['EmpID'] = emp[0]
+				session['ShopID'] = emp[3]
+				cur.execute("SELECT * FROM MANAGES;")
+				db.connection.commit()
+				checks = cur.fetchall()
+				session['Manager'] = False
+				for i in checks:
+					if i[0]==emp[0] and i[1]==emp[3]:
+						session['Manager'] = True
+						break
+				cur.close()
+				return "Logged in"
+		return "Error"
 
 
 	# db = MySQLdb.connect("localhost","root",'iwannaknow101','trial')
@@ -80,4 +92,5 @@ def login():
 # pass
 
 if __name__ == '__main__':
+	app.secret_key = "abc"
 	app.run(debug=True)
