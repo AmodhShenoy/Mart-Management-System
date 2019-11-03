@@ -5,9 +5,10 @@ import re
 
 app = Flask(__name__)
 db = MySQL(app)
+
 app.secret_key = 'dbms'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Vithik13&'
+app.config['MYSQL_USER'] = 'dbmsuser'
+app.config['MYSQL_PASSWORD'] = 'pwd'
 app.config['MYSQL_DB'] = 'dbms'
 app.config['MYSQL_HOST'] = 'localhost'
 
