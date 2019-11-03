@@ -1,11 +1,13 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
-from flask_session import Session
+import MySQLdb.cursors
+import fbprophet
+import pandas as pd
 
-db = MySQL()
 app = Flask(__name__)
 db = MySQL(app)
 
+app.secret_key = 'dbms'
 app.config['MYSQL_USER'] = 'dbmsuser'
 app.config['MYSQL_PASSWORD'] = 'pwd'
 app.config['MYSQL_DB'] = 'dbms'
@@ -17,27 +19,26 @@ def login():
 	if request.method=='GET':
 		return render_template('land.html')
 	else:
-		username = request.form.get('username')
-		pwd = request.form.get('pwd')
-		cur = db.connection.cursor()
-		cur.execute("SELECT * from EMPLOYEE;")
-		db.connection.commit()
-		emps = cur.fetchall()
-		for emp in emps:
-			if emp[2]==pwd and emp[4]==username:
-				session['EmpID'] = emp[0]
-				session['ShopID'] = emp[3]
-				cur.execute("SELECT * FROM MANAGES;")
-				db.connection.commit()
-				checks = cur.fetchall()
-				session['Manager'] = False
-				for i in checks:
-					if i[0]==emp[0] and i[1]==emp[3]:
-						session['Manager'] = True
-						break
-				cur.close()
-				return "Logged in"
-		return "Error"
+		cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
+		username = request.form.get("username")
+		cur.execute('SELECT * FROM EMPLOYEE WHERE Username = %s',(str(username),))
+		l = cur.fetchone()
+		if not l:
+			return render_template('land.html', msg = 'Invalid Username')
+
+		pwd = request.form.get("pwd")
+		cur.execute('SELECT EmpID,EmpPassword FROM EMPLOYEE WHERE Username = %s',(str(username),))
+
+		row = cur.fetchone()
+		if row and pwd == row['EmpPassword']:
+			session['loggedin'] = True
+			session['id'] = row['EmpID']
+			session['username'] = str(username)
+			print("hey")
+			print(session)
+			return render_template('land.html', msg = 'Hello')
+		else:
+			return render_template('land.html', msg = 'Invalid Password')
 
 
 	# db = MySQLdb.connect("localhost","root",'iwannaknow101','trial')
@@ -91,6 +92,25 @@ def login():
 # @app.route('/store/modify')
 # pass
 
+@app.route('/predict/<shopid>',methods=['GET'])
+def predict(shopid):
+	cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
+	cur.execute('SELECT ItemID,Quantity,SaleDate FROM SALES WHERE ShopID='+shopid+';')
+	l = cur.fetchall()
+	sales = []
+	for i in l:
+		sales.append(i.values())
+	data = pd.DataFrame(sales,columns=['ItemID','y','ds'])
+	for item in data['ItemID'].unique():
+		d = data[data.ItemID==item].drop(['ItemID'],axis=1)
+		model = fbprophet.Prophet()
+		model.fit(d)
+		p = model.make_future_dataframe(periods=14)
+		forecast = model.predict(p)
+		print(forecast[['yhat','ds']])
+		print('-------------------------------')
+	return "DONE"
+
+
 if __name__ == '__main__':
-	app.secret_key = "abc"
 	app.run(debug=True)
