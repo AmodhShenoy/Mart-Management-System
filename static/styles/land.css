@@ -24,7 +24,7 @@ body,.lmain{
 }
 
 body{
-	background-image: url("bg.jpg");
+	background-image: url("/static/images/bg.jpg");
 	background-position: top;
 	background-repeat: no-repeat;
 	background-size: cover;

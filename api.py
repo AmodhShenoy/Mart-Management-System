@@ -5,8 +5,8 @@ db = MySQL()
 app = Flask(__name__)
 db = MySQL(app)
 
-app.config['MYSQL_USER'] = 'dbms'
-app.config['MYSQL_PASSWORD'] = 'dbmsproject'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'password'
 app.config['MYSQL_DB'] = 'dbms'
 app.config['MYSQL_HOST'] = 'localhost'
 
@@ -14,7 +14,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 @app.route('/',methods=['GET','POST'])
 def login():
 	if request.method=='GET':
-		return render_template('templates/login.html')
+		return render_template('land.html')
 	else:
 		username = request.form.get('uname')
 		pwd = reqeust.form.get('pwd')
