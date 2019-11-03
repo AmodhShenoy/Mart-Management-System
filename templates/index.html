@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mart</title>
+   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+{% block content %}
+    <div class="container">
+        <table class="table">
+            <thead>
+                <th scope="col">ITEM ID</th>
+                <th scope="col">ITEM Name</th>
+                <th scope="col">ITEM Quantity</th>
+                <th scope="col">EDIT</th>
+                <th scope="col">ADD</th>
+                <th></th>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td>{{ item['ItemID'] }}</td>
+                        <td>{{ item['ItemID'] }}</td>
+                        <td>{{ item['Units'] }}</td>
+                        <td>
+                            <button name="button" type="button" class="btn btn-success" value= "edit" data-toggle="modal" data-target="#edit_{{ item['ItemID'] }}" >Sales</button>
+                            <br>
+                                <div id="edit_{{ item['ItemID'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="trans_message" aria-hidden="true">
+                                <form action="{{ url_for('index') }}" method="POST">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-body"><input name="item_quantity" placeholder="{{ item['Units'] }}"></div>
+                                            <div class="modal-footer">
+                                                <input type="number" name="item_id" 
+                                                 value="{{ item['ItemID'] }}" hidden aria-hidden="true">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Record Sale</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </td>
+                        <td>
+                            <button name="button" type="button" class="btn btn-success" value= "add" data-toggle="modal" data-target="#add_{{ item['ItemID'] }}" >Add Quantity</button>
+                            <br>
+                                <div id="add_{{ item['ItemID'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="trans_message" aria-hidden="true">
+                                <form action="{{ url_for('add') }}" method="POST">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-body"><input name="item_quantity" placeholder="{{ item['Units'] }}"></div>
+                                            <div class="modal-footer">
+                                                <input type="number" name="item_id" 
+                                                 value="{{ item['ItemID'] }}" hidden aria-hidden="true">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Add quantity</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+ {% endblock %}
+ </body>
+ </html>
