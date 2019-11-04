@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mart</title>
+   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+{% block content %}
+    <div class="container">
+        <table class="table">
+            <thead>
+                <th scope="col">ITEM ID</th>
+                <th scope="col">ITEM Name</th>
+                <th scope="col">ITEM Cost</th>
+                <th scope="col">ADD Item To Your Shop</th>
+                <th></th>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td>{{ item['ItemID'] }}</td>
+                        <td>{{ item['ItemName'] }}</td>
+                        <td>{{ item['Cost'] }}</td>
+                        <td>
+                            <button name="button" type="button" class="btn btn-success" value= "add" data-toggle="modal" data-target="#add_{{ item['ItemID'] }}" >Add Item To Shop</button>
+                            <br>
+                                <div id="add_{{ item['ItemID'] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="trans_message" aria-hidden="true">
+                                <form action="{{ url_for('manager_add_item') }}" method="POST">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-body"><input name="item_quantity" placeholder="{{ item['ItemID'] }}"></div>
+                                            <div class="modal-footer">
+                                                <input type="number" name="item_id" 
+                                                 value="{{ item['ItemID'] }}" hidden aria-hidden="true">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Add Item To Shop</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+ {% endblock %}
+ </body>
+ </html>

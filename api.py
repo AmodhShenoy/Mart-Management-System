@@ -36,13 +36,14 @@ def login():
 			session['empid'] = row['EmpID']
 			session['shopid'] = row['ShopID']
 			session['username'] = str(username)
-			cur.execute('SELECT * FROM MANAGES WHERE EmpID='+str(EmpID)+' AND ShopID='+str(ShopID)+';')
+			cur.execute('SELECT * FROM MANAGES WHERE EmpID='+str(session['empid'])+' AND ShopID='+str(session['shopid'])+';')
 			a = cur.fetchone()
 			if a:
 				session['manager'] = True
+				return redirect(url_for('manager_add_item'))
 			else:
 				session['manager'] = False
-			return redirect(url_for('index'))
+				return redirect(url_for('index'))
 		else:
 			return render_template('land.html', msg = 'Invalid Password')
 		cur.close()
@@ -86,6 +87,28 @@ def add():
 		cur.close()
 		db.connection.commit()
 		return redirect(url_for('index'))
+
+#Adding new item
+@app.route('/manager_add_item',methods=['GET','POST'])
+def manager_add_item():
+	if request.method=='GET':
+		cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
+		query = "SELECT * FROM ITEMS"
+		cur.execute(query)
+		items = cur.fetchall()
+		return render_template('manager_add_item.html', items = items)
+	if request.method=='POST':
+		item_id = request.form.get("item_id")
+		item_quantity = request.form.get("item_quantity")
+		cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
+		query = "INSERT INTO INVENTORY VALUES(" + str(session['shopid']) + "," +  str(item_id) + "," + str(item_quantity) + ")"
+		cur.execute(query)
+		cur.close()
+		db.connection.commit()
+		return redirect(url_for('index'))
+
+
+
 
 # #creating a new item
 # @app.route('/items/new')
@@ -144,7 +167,6 @@ def predict(shopid):
 		d = data[data.ItemID==item].drop(['ItemID'],axis=1)
 		model = fbprophet.Prophet()
 		model.fit(d)
-		per = 
 		p = model.make_future_dataframe(periods=14)
 		forecast = model.predict(p)
 		print(forecast[['yhat','ds']])
