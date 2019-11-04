@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import fbprophet
 import pandas as pd
+from datetime import datetime,timedelta
 
 app = Flask(__name__)
 db = MySQL(app)
@@ -35,6 +36,12 @@ def login():
 			session['empid'] = row['EmpID']
 			session['shopid'] = row['ShopID']
 			session['username'] = str(username)
+			cur.execute('SELECT * FROM MANAGES WHERE EmpID='+str(EmpID)+' AND ShopID='+str(ShopID)+';')
+			a = cur.fetchone()
+			if a:
+				session['manager'] = True
+			else:
+				session['manager'] = False
 			return redirect(url_for('index'))
 		else:
 			return render_template('land.html', msg = 'Invalid Password')
@@ -137,6 +144,7 @@ def predict(shopid):
 		d = data[data.ItemID==item].drop(['ItemID'],axis=1)
 		model = fbprophet.Prophet()
 		model.fit(d)
+		per = 
 		p = model.make_future_dataframe(periods=14)
 		forecast = model.predict(p)
 		print(forecast[['yhat','ds']])
