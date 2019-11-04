@@ -3,7 +3,12 @@ from flask_mysqldb import MySQL
 import MySQLdb.cursors
 import fbprophet
 import pandas as pd
-from datetime import datetime,timedelta
+from datetime import date,timedelta,datetime
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+import time
+import io
 
 app = Flask(__name__)
 db = MySQL(app)
@@ -139,17 +144,52 @@ def predict(shopid):
 	sales = []
 	for i in l:
 		sales.append(i.values())
+
+	ll = []
+	today = datetime.strptime('2019-08-14','%Y-%m-%d')
+	# today = date.today()
+	for i in range(1,8):
+		da = today + timedelta(days=i)
+		ll.append(str(da))
 	data = pd.DataFrame(sales,columns=['ItemID','y','ds'])
+	prediction = pd.DataFrame(columns=list(data['ItemID'].unique())+['y'],index=ll)
+	for i in prediction.columns:
+		prediction[i]=0
+	print(prediction)
 	for item in data['ItemID'].unique():
 		d = data[data.ItemID==item].drop(['ItemID'],axis=1)
 		model = fbprophet.Prophet()
 		model.fit(d)
-		per = 
-		p = model.make_future_dataframe(periods=14)
-		forecast = model.predict(p)
-		print(forecast[['yhat','ds']])
-		print('-------------------------------')
-	return "DONE"
+		START_DATE = datetime.strptime('2019-08-10','%Y-%m-%d')
+		today = datetime.strptime('2019-08-14','%Y-%m-%d')
+		per = today - START_DATE
+		p = model.make_future_dataframe(periods=per.days+8)
+		fc = model.predict(p)
+		for i in fc['ds']:
+			if str(i) in prediction.index:
+				prediction.loc[str(i)][item] += int(round(fc[fc.ds==i]['yhat']))
+
+		for i in prediction.index:
+			sum = 0
+			for j in prediction.columns:
+				if j!='y':
+					sum+=prediction.loc[i][j]
+			prediction.loc[i]['y'] = sum
+	
+	x = list(prediction.index)
+	for i in range(len(x)):
+		x[i] = datetime.strptime(x[i][:10],'%Y-%m-%d')
+	y = prediction['y']
+
+	plt.plot(x,y)
+	plt.tight_layout()
+	plt.xlabel('Dates')
+	plt.ylabel('No. of sales predicted')
+	plt.savefig('static/images/foo.png')
+	print("PLOT SAVED")
+	time.sleep(2)
+	print(prediction)
+	return render_template('timeseries.html', tables = [prediction.to_html(classes='data')],titles=prediction.columns.values)
 
 
 if __name__ == '__main__':

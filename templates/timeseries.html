@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<img src="static/images/foo.png">
+	{% for table in tables %}
+            {{titles[loop.index]}}
+            {{ table|safe }}
+    {% endfor %}
+</body>
+</html>
