@@ -72,6 +72,8 @@ def index():
 		new_value = int(old_value) - int(item_quantity)
 		query = "UPDATE INVENTORY SET Units = " + str(new_value) + " WHERE ShopID = " + str(session['shopid']) + " AND ItemID = " +str(item_id)
 		cur.execute(query)
+		query = "INSERT INTO SALES VALUES(" + str(session['shopid']) + "," + str(item_id) + "," + str(item_quantity) + ",CURRENT_TIME())" 
+		cur.execute(query) 
 		cur.close()
 		db.connection.commit()
 		return redirect(url_for('index'))
