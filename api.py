@@ -61,7 +61,13 @@ def index():
 		query = "SELECT * FROM  INVENTORY WHERE ShopID = " + str(session['shopid'])
 		cur.execute(query)
 		items = cur.fetchall()
-		return render_template('index.html', items = items)
+		query = "SELECT * FROM ITEMS"
+		cur.execute(query)
+		item_det = cur.fetchall()
+		item_names = {}
+		for x in item_det:
+			item_names[x['ItemID']] = x['Name']
+		return render_template('index.html', items = items, item_names = item_names)
 	if request.method=='POST':
 		item_id = request.form.get("item_id")
 		item_quantity = request.form.get("item_quantity")

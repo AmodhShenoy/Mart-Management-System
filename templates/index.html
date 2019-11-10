@@ -22,7 +22,7 @@
                 {% for item in items %}
                     <tr>
                         <td>{{ item['ItemID'] }}</td>
-                        <td>{{ item['ItemID'] }}</td>
+                        <td>{{ item_names[item['ItemID']] }}</td>
                         <td>{{ item['Units'] }}</td>
                         <td>
                             <button name="button" type="button" class="btn btn-success" value= "edit" data-toggle="modal" data-target="#edit_{{ item['ItemID'] }}" >Sales</button>
