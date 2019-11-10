@@ -7,6 +7,9 @@
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 <body>
+{% if msg %}
+    <div class="alert alert-danger" role="alert">{{ msg }}</div></p> 
+{% endif %}
 {% block content %}
     <div class="container">
         <table class="table">

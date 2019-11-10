@@ -57,6 +57,8 @@ def login():
 @app.route('/index',methods=['GET','POST'])
 def index():
 	if request.method=='GET':
+		if session.get('empid') is None:
+			return render_template('land.html', msg = 'Please Login as an Employee')
 		cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
 		query = "SELECT * FROM  INVENTORY WHERE ShopID = " + str(session['shopid'])
 		cur.execute(query)
@@ -76,6 +78,8 @@ def index():
 		cur.execute(query)
 		old_value = cur.fetchone()['Units']
 		new_value = int(old_value) - int(item_quantity)
+		if new_value < 0:
+			return redirect(url_for('index'))
 		query = "UPDATE INVENTORY SET Units = " + str(new_value) + " WHERE ShopID = " + str(session['shopid']) + " AND ItemID = " +str(item_id)
 		cur.execute(query)
 		query = "INSERT INTO SALES VALUES(" + str(session['shopid']) + "," + str(item_id) + "," + str(item_quantity) + ",CURRENT_TIME())" 
@@ -105,6 +109,8 @@ def add():
 @app.route('/manager_add_item',methods=['GET','POST'])
 def manager_add_item():
 	if request.method=='GET':
+		if session.get('empid') is None or session['manager'] == False:
+			return render_template('land.html', msg = 'Please Login as Manager')
 		cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
 		query = "SELECT * FROM ITEMS"
 		cur.execute(query)
