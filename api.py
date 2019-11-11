@@ -14,8 +14,8 @@ app = Flask(__name__)
 db = MySQL(app)
 
 app.secret_key = 'dbms'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Vithik13&'
+app.config['MYSQL_USER'] = 'dbmsuser'
+app.config['MYSQL_PASSWORD'] = 'pwd'
 app.config['MYSQL_DB'] = 'dbms'
 app.config['MYSQL_HOST'] = 'localhost'
 
@@ -126,7 +126,18 @@ def manager_add_item():
 		db.connection.commit()
 		return redirect(url_for('index'))
 
-
+@app.route('/employee/add',methods=['GET','POST'])
+def employee_add():
+	if request.method=='GET':
+		if session.get('empid') is None or session['manager'] == False:
+			return render_template('land.html', msg = 'Please Login as Manager')
+		return render_template('add_employee.html')
+	else:
+		name = request.form.get("name")
+		id = request.form.get("id")
+		uname = rquest.form.get("uname")
+		pwd = request.form.get("pwd")
+		
 
 
 # #creating a new item
