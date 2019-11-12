@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title></title>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block content %}
 	<img src="static/images/foo.png">
 	{% for table in tables %}
             {{titles[loop.index]}}
             {{ table|safe }}
     {% endfor %}
-</body>
-</html>
+ {% endblock %}

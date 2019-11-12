@@ -78,6 +78,7 @@ def index():
 		cur.execute(query)
 		old_value = cur.fetchone()['Units']
 		new_value = int(old_value) - int(item_quantity)
+		# Amodh if new_value<0
 		if new_value < 0:
 			return redirect(url_for('index'))
 		query = "UPDATE INVENTORY SET Units = " + str(new_value) + " WHERE ShopID = " + str(session['shopid']) + " AND ItemID = " +str(item_id)
