@@ -143,7 +143,14 @@ def employee_add():
 		cur.close()
 		db.connection.commit()
 		return redirect(url_for('employee_add'))
-		
+
+@app.route('/logout',methods=['GET'])
+def logout():
+	session.clear()
+	return render_template('land.html', msg = 'You have been logged out')
+
+
+	
 
 
 # #creating a new item
