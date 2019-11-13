@@ -144,6 +144,22 @@ def employee_add():
 		db.connection.commit()
 		return redirect(url_for('employee_add'))
 
+@app.route('/add_items',methods=['GET','POST'])
+def add_items():
+	if request.method=='GET':
+		if session.get('empid') is None or session['manager'] == False:
+			return render_template('land.html', msg = 'Please Login as Manager')
+		return render_template('add_items.html')
+	else:
+		name = request.form.get("name")
+		cost = request.form.get("cost")
+		cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
+		cur.execute('INSERT INTO ITEMS (Name,Cost) VALUES(%s,%s)',(str(name),str(cost)))
+		#query = "INSERT INTO EMPLOYEE (ShopID,EmpName,EmpPassword,Username) VALUES(" + str(session['shopid']) + "," +  str(name) + "," + str(pwd) + "," + str(uname) + ")"
+		cur.close()
+		db.connection.commit()
+		return redirect(url_for('add_items'))
+
 @app.route('/logout',methods=['GET'])
 def logout():
 	session.clear()
