@@ -109,22 +109,25 @@ def add():
 #Adding new item
 @app.route('/manager_add_item',methods=['GET','POST'])
 def manager_add_item():
+	cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
+	query = "SELECT * FROM ITEMS"
+	cur.execute(query)
+	items = cur.fetchall()
 	if request.method=='GET':
 		if session.get('empid') is None or session['manager'] == False:
 			return render_template('land.html', msg = 'Please Login as Manager')
-		cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
-		query = "SELECT * FROM ITEMS"
-		cur.execute(query)
-		items = cur.fetchall()
 		return render_template('manager_add_item.html', items = items)
 	if request.method=='POST':
 		item_id = request.form.get("item_id")
 		item_quantity = request.form.get("item_quantity")
 		cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
-		query = "INSERT INTO INVENTORY VALUES(" + str(session['shopid']) + "," +  str(item_id) + "," + str(item_quantity) + ")"
-		cur.execute(query)
-		cur.close()
-		db.connection.commit()
+		try:
+			query = "INSERT INTO INVENTORY VALUES(" + str(session['shopid']) + "," +  str(item_id) + "," + str(item_quantity) + ")"
+			cur.execute(query)
+			cur.close()
+			db.connection.commit()
+		except:
+			return render_template('manager_add_item.html', items = items, msg = "Item already exists in inventory!")
 		return redirect(url_for('index'))
 
 @app.route('/add_employee',methods=['GET','POST'])
