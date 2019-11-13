@@ -144,6 +144,22 @@ def employee_add():
 		db.connection.commit()
 		return redirect(url_for('employee_add'))
 
+@app.route('/add_items',methods=['GET','POST'])
+def add_items():
+	if request.method=='GET':
+		if session.get('empid') is None or session['manager'] == False:
+			return render_template('land.html', msg = 'Please Login as Manager')
+		return render_template('add_items.html')
+	else:
+		name = request.form.get("name")
+		cost = request.form.get("cost")
+		cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
+		cur.execute('INSERT INTO ITEMS (Name,Cost) VALUES(%s,%s)',(str(name),str(cost)))
+		#query = "INSERT INTO EMPLOYEE (ShopID,EmpName,EmpPassword,Username) VALUES(" + str(session['shopid']) + "," +  str(name) + "," + str(pwd) + "," + str(uname) + ")"
+		cur.close()
+		db.connection.commit()
+		return redirect(url_for('add_items'))
+
 @app.route('/logout',methods=['GET'])
 def logout():
 	session.clear()
@@ -195,7 +211,7 @@ def predict():
 	
 	x = list(prediction.index)
 	for i in range(len(x)):
-		x[i] = datetime.strptime(x[i][5:10],'%m-%d')
+		x[i] = datetime.strptime(x[i][:10],'%Y-%m-%d')
 		# x[i] = calendar.day_name(datetime.strptime(x[i][:10],"%Y-%m-%d"))
 	y = prediction['y']
 
@@ -207,7 +223,13 @@ def predict():
 	plt.savefig('static/images/foo.png')
 	print("PLOT SAVED")
 	time.sleep(2)
-	print(prediction)
+	prediction.rename(columns = {'y':'Total Sales'},inplace=True)
+	ind = {}
+	for i in prediction.index:
+		ind[i] = i[:10]
+	prediction.rename(index = ind,inplace=True) 
+	
+
 	return render_template('timeseries.html', tables = [prediction.to_html(classes='data')],titles=prediction.columns.values)
 
 
