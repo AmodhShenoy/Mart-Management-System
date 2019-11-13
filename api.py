@@ -9,6 +9,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import time
 import io
+import calendar
 
 app = Flask(__name__)
 db = MySQL(app)
@@ -56,19 +57,19 @@ def login():
 #Index page for employee
 @app.route('/index',methods=['GET','POST'])
 def index():
+	if session.get('empid') is None:
+		return render_template('land.html', msg = 'Please Login as an Employee')
+	cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
+	query = "SELECT * FROM  INVENTORY WHERE ShopID = " + str(session['shopid'])
+	cur.execute(query)
+	items = cur.fetchall()
+	query = "SELECT * FROM ITEMS"
+	cur.execute(query)
+	item_det = cur.fetchall()
+	item_names = {}
+	for x in item_det:
+		item_names[x['ItemID']] = x['Name']
 	if request.method=='GET':
-		if session.get('empid') is None:
-			return render_template('land.html', msg = 'Please Login as an Employee')
-		cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
-		query = "SELECT * FROM  INVENTORY WHERE ShopID = " + str(session['shopid'])
-		cur.execute(query)
-		items = cur.fetchall()
-		query = "SELECT * FROM ITEMS"
-		cur.execute(query)
-		item_det = cur.fetchall()
-		item_names = {}
-		for x in item_det:
-			item_names[x['ItemID']] = x['Name']
 		return render_template('index.html', items = items, item_names = item_names)
 	if request.method=='POST':
 		item_id = request.form.get("item_id")
@@ -78,9 +79,8 @@ def index():
 		cur.execute(query)
 		old_value = cur.fetchone()['Units']
 		new_value = int(old_value) - int(item_quantity)
-		# Amodh if new_value<0
 		if new_value < 0:
-			return redirect(url_for('index'))
+			return render_template('index.html', items = items, item_names=item_names, msg = "Not enough items in inventory!")
 		query = "UPDATE INVENTORY SET Units = " + str(new_value) + " WHERE ShopID = " + str(session['shopid']) + " AND ItemID = " +str(item_id)
 		cur.execute(query)
 		query = "INSERT INTO SALES VALUES(" + str(session['shopid']) + "," + str(item_id) + "," + str(item_quantity) + ",CURRENT_TIME())" 
@@ -153,52 +153,11 @@ def logout():
 	
 
 
-# #creating a new item
-# @app.route('/items/new')
-# pass
 
-# #modifying item details
-# @app.route('/items/modify')
-# pass
 
-# #adding a sale
-# @app.route('/inventory/sell')
-# pass
-
-# #adding items to the inventory
-# @app.route('/inventory/store')
-# pass
-
-# #removing items from the inventory for unknown reasons
-# @app.route('inventory/items/remove')
-# pass
-
-# #adding inventory to store
-# @app.route('/inventory/add')
-# pass
-
-# #remove items from inventory
-# @app.route('/inventory/remove')
-# pass
-
-# #delete inventory as a whole
-# @app.route('/inventory/delete')
-# pass
-
-# #add a new store
-# @app.route('/store/add')
-# pass
-
-# #remove a store
-# @app.route('/store/remove')
-# pass
-
-# #modify the store details
-# @app.route('/store/modify')
-# pass
-
-@app.route('/predict/<shopid>',methods=['GET'])
-def predict(shopid):
+@app.route('/predict',methods=['GET'])
+def predict():
+	shopid=str(session['shopid'])
 	cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
 	cur.execute('SELECT ItemID,Quantity,SaleDate FROM SALES WHERE ShopID='+shopid+';')
 	l = cur.fetchall()
@@ -239,9 +198,11 @@ def predict(shopid):
 	
 	x = list(prediction.index)
 	for i in range(len(x)):
-		x[i] = datetime.strptime(x[i][:10],'%Y-%m-%d')
+		x[i] = datetime.strptime(x[i][5:10],'%m-%d')
+		# x[i] = calendar.day_name(datetime.strptime(x[i][:10],"%Y-%m-%d"))
 	y = prediction['y']
 
+	print(type(x[0]))
 	plt.plot(x,y)
 	plt.tight_layout()
 	plt.xlabel('Dates')

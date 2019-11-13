@@ -26,7 +26,8 @@
         {% if session.get('empid')  and session['manager'] == True %}
       <li><a href="{{ url_for('manager_add_item') }}">Add New Items</a></li>
       <li><a href="{{ url_for('employee_add') }}">Add Employee</a></li>
-      {% endif %}
+      <li><a href="{{ url_for('predict') }}">Predict Sales</a></li>
+       {% endif %}
       <li><a href="{{ url_for('login') }}">Login</a></li>
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
     </ul>
