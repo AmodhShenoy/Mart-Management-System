@@ -160,6 +160,24 @@ def add_items():
 		db.connection.commit()
 		return redirect(url_for('add_items'))
 
+@app.route('/sales',methods=['GET'])
+def sales():
+	if session.get('empid') is None or session['manager'] == False:
+		return render_template('land.html', msg = 'Please Login as Manager')
+	cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
+	query = "SELECT * FROM SALES WHERE ShopID = " + str(session['shopid'])
+	cur.execute(query)
+	sales = cur.fetchall()
+	query = "SELECT * FROM ITEMS"
+	cur.execute(query)
+	item_det = cur.fetchall()
+	item_names = {}
+	for x in item_det:
+		item_names[x['ItemID']] = x['Name']
+	cur.close()
+	db.connection.commit()
+	return render_template('sales.html', sales = sales, items = item_names)
+
 @app.route('/logout',methods=['GET'])
 def logout():
 	session.clear()
