@@ -200,7 +200,7 @@ def predict():
 		sales.append(i.values())
 
 	ll = []
-	today = datetime.strptime('2019-08-14','%Y-%m-%d')
+	today = datetime.strptime('2019-11-13','%Y-%m-%d')
 	# today = date.today()
 	for i in range(1,8):
 		da = today + timedelta(days=i)
@@ -209,16 +209,23 @@ def predict():
 	prediction = pd.DataFrame(columns=list(data['ItemID'].unique())+['y'],index=ll)
 	for i in prediction.columns:
 		prediction[i]=0
-	print(prediction)
+	# print(prediction)
 	for item in data['ItemID'].unique():
 		d = data[data.ItemID==item].drop(['ItemID'],axis=1)
 		model = fbprophet.Prophet()
 		model.fit(d)
-		START_DATE = datetime.strptime('2019-08-10','%Y-%m-%d')
-		today = datetime.strptime('2019-08-14','%Y-%m-%d')
+
+		START_DATE = datetime.strptime('2019-11-09','%Y-%m-%d')
+		today = datetime.strptime('2019-11-13','%Y-%m-%d')
 		per = today - START_DATE
+		
 		p = model.make_future_dataframe(periods=per.days+8)
+		# print('ID:',item)
+		# print(d)
+		# print()
+		# print(p)
 		fc = model.predict(p)
+		print(fc)
 		for i in fc['ds']:
 			if str(i) in prediction.index:
 				prediction.loc[str(i)][item] += int(round(fc[fc.ds==i]['yhat']))
@@ -236,13 +243,15 @@ def predict():
 		# x[i] = calendar.day_name(datetime.strptime(x[i][:10],"%Y-%m-%d"))
 	y = prediction['y']
 
-	print(type(x[0]))
+	print(x)
+	print(y)
+	# print(type(x[0]))
 	plt.plot(x,y)
 	plt.tight_layout()
 	plt.xlabel('Dates')
 	plt.ylabel('No. of sales predicted')
 	plt.savefig('static/images/foo.png')
-	print("PLOT SAVED")
+	# print("PLOT SAVED")
 	time.sleep(2)
 	prediction.rename(columns = {'y':'Total Sales'},inplace=True)
 	ind = {}
