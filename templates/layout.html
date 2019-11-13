@@ -24,8 +24,9 @@
     <ul class="nav navbar-nav">
       <li><a href="{{ url_for('index') }}">Items</a></li>
         {% if session.get('empid')  and session['manager'] == True %}
-      <li><a href="{{ url_for('manager_add_item') }}">Add New Items</a></li>
+      <li><a href="{{ url_for('manager_add_item') }}">Add Items to Shop</a></li>
       <li><a href="{{ url_for('employee_add') }}">Add Employee</a></li>
+      <li><a href="{{ url_for('add_items') }}">Add New Items</a></li>
       {% endif %}
       <li><a href="{{ url_for('login') }}">Login</a></li>
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
