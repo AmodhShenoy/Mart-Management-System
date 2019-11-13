@@ -26,13 +26,9 @@
         {% if session.get('empid')  and session['manager'] == True %}
       <li><a href="{{ url_for('manager_add_item') }}">Add Items to Shop</a></li>
       <li><a href="{{ url_for('employee_add') }}">Add Employee</a></li>
-<<<<<<< HEAD
       <li><a href="{{ url_for('predict') }}">Predict Sales</a></li>
-       {% endif %}
-=======
       <li><a href="{{ url_for('add_items') }}">Add New Items</a></li>
       {% endif %}
->>>>>>> 5d1ca4f53ebad2007cb4f8c1afb08e17356db6ba
       <li><a href="{{ url_for('login') }}">Login</a></li>
       <li><a href="{{ url_for('logout') }}">Logout</a></li>
     </ul>

@@ -150,13 +150,10 @@ def logout():
 	return render_template('land.html', msg = 'You have been logged out')
 
 
-	
-
-
-
-
 @app.route('/predict',methods=['GET'])
 def predict():
+	if session.get('empid') is None:
+		return render_template('land.html', msg = 'Please Login as an Employee')
 	shopid=str(session['shopid'])
 	cur = db.connection.cursor(MySQLdb.cursors.DictCursor)
 	cur.execute('SELECT ItemID,Quantity,SaleDate FROM SALES WHERE ShopID='+shopid+';')
